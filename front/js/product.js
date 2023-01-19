@@ -48,9 +48,14 @@ function info_Produit(params)
 // ajout des produits au panier
 const bouton_Panier = document.getElementById("addToCart")
 
-bouton_Panier.addEventListener('click', function (){
+bouton_Panier.addEventListener('click', function (event){
 
+// on recupere l'elemnt contenant la quantité 
 let nb_Produit= document.getElementById("quantity")
+
+
+console.log(detail_Produit)
+
 
 produits = {
     produit_id : detail_Produit._id,
@@ -58,40 +63,31 @@ produits = {
     couleur : couleur.value
 }
 
+// obligation pour l'utilisateur de selectionné une couleur et un  nombre pour le produit
+if( couleur.value=="" || nb_Produit.value==0){
+    console.log("je passe dans le if")
+    event.preventDefault()
+    window.confirm("veuillez selectionez une couleur et/ou un nombre")
+    return false
+}
 
+// si le panier contient dejà un objet alors on lance la fonction comparaison sinon on l'ajoute au panier 
 if (localStorage.getItem('panier')){
     comparaison(produits)
 }else{
     ajout_produit(produits)
 }
+
 if(window.confirm('Le produit a été ajouté. Voulez-vous consulter votre panier ?')) {
     window.location.replace("./cart.html")
 }
-} )
+} ) 
+
 
 function comparaison(produits){
-    panier = JSON.parse(localStorage.getItem('panier'))
+    panier = JSON.parse(localStorage.getItem('panier')) // on retransforme le contenue du local storage en un objet 
 
-    // panier.forEach(function(index_panier){
-    //     if(index_panier.produit_id===produits.produit_id){
-
-    //         if (index_panier.couleur===produits.couleur){
-    //             index_panier.quantite = parseInt( index_panier.quantite )+ parseInt( produits.quantite)
-    //             console.log(panier)
-    //             localStorage.removeItem('panier')
-    //             console.log(localStorage.getItem('panier'))
-    //             localStorage.setItem('panier',JSON.stringify(panier))
-    //         }
-    //         else{
-    //             ajout_produit(produits)
-    //         }   
-    //     }
-    //     else{
-    //         ajout_produit(produits)
-    //     }
-    // })
-
-
+    // on lance la fonction find qui permet de boucler sur le panier et s'arreté quand la condition est remplie
     let trouver_Produit = panier.find(p => p.produit_id === produits.produit_id && p.couleur === produits.couleur)
 
     if(trouver_Produit){
